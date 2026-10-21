@@ -2,137 +2,227 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2c6e6a">
 <title>Menu Settimana Fit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
 <style>
-  /* Layout: barra comandi in alto, poi griglia di 7 giorni che va a una colonna su telefono */
+  /* Layout: due "schermate" da telefono su sfondo turchese; sotto 860px il dettaglio diventa un foglio a scorrimento */
   :root {
-    --bg: #f3f6f2; --card: #ffffff; --fg: #1d2a22; --muted: #5d6e63;
-    --line: #dbe4dc; --accent: #2f6b4f; --accent-fg: #ffffff; --pop: #d9822b;
-    --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-    --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #121a15; --card: #1a241e; --fg: #e5ede7; --muted: #9db0a3;
-      --line: #2a3a30; --accent: #7cc4a0; --accent-fg: #0e1a13; --pop: #f0a35a;
-      color-scheme: dark;
-    }
+    --stage: #2c6e6a; --stage-2: #3d8f89;
+    --teal: #5dbcb6; --teal-soft: #eaf7f6; --teal-ink: #24605c;
+    --card: #ffffff; --ink: #1f2b2a; --muted: #869896; --line: #e3eceb;
+    --font: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.45 var(--body); }
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 28px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); display: grid; gap: 20px; }
-  h1 { font: 800 clamp(28px, 5vw, 40px)/1.05 var(--display); margin: 0; letter-spacing: -0.02em; }
-  .sub { color: var(--muted); margin: 6px 0 0; }
-  .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
-  label { display: grid; gap: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  select, button { font: inherit; font-size: 15px; border-radius: 10px; padding: 9px 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); }
-  button { cursor: pointer; }
-  button.main { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
-  button:focus-visible, select:focus-visible { outline: 2px solid var(--pop); outline-offset: 2px; }
-  .note { font-size: 13px; color: var(--muted); }
-  .days { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
-  .day { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 10px; align-content: start; }
-  .day h2 { font: 600 20px/1 var(--display); margin: 0; display: flex; justify-content: space-between; align-items: baseline; }
-  .day h2 small { font: 600 13px var(--body); color: var(--pop); font-variant-numeric: tabular-nums; }
-  .meal { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding-top: 10px; border-top: 1px dashed var(--line); }
-  .meal .slot { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
-  .meal .name { grid-column: 1; }
-  .meal .kcal { grid-column: 1; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .meal button { grid-column: 2; grid-row: 1 / span 3; align-self: center; padding: 4px 8px; font-size: 13px; }
-  .saved { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 8px; }
-  .saved h3 { margin: 0; font: 600 17px var(--display); }
+  [hidden] { display: none !important; }
+  body { margin: 0; min-height: 100vh; color: var(--ink); font: 14px/1.45 var(--font);
+    background: radial-gradient(1000px 600px at 15% -10%, var(--stage-2), transparent 60%), var(--stage); }
+  .wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 18px; justify-items: center;
+    padding: max(28px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); }
+  .stage { display: grid; gap: 28px; width: 100%; grid-template-columns: minmax(0, 400px); justify-content: center; align-items: start; }
+  @media (min-width: 860px) { .stage { grid-template-columns: 400px 400px; } }
+  .phone { background: var(--card); border-radius: 28px; overflow: hidden; box-shadow: 0 24px 60px rgba(8, 40, 38, .35); }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible, select:focus-visible { outline: 3px solid #ffc861; outline-offset: 2px; }
+
+  /* Schermata elenco */
+  .top { background: var(--teal); color: #fff; padding: 20px 22px 56px; display: grid; gap: 14px; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .brand { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .85; }
+  .top h1 { margin: 0; font-size: 28px; line-height: 1.1; font-weight: 700; }
+  .top p { margin: 4px 0 0; font-size: 13px; opacity: .9; }
+  .ghost { border: 0; border-radius: 12px; background: rgba(255, 255, 255, .22); color: #fff; font-weight: 600; font-size: 13px; padding: 8px 12px; }
+  .ghost:hover { background: rgba(255, 255, 255, .32); }
+  .selects { display: flex; gap: 8px; flex-wrap: wrap; }
+  .selects select { appearance: none; -webkit-appearance: none; border: 0; border-radius: 999px; color: #fff; font: 500 13px var(--font); padding: 8px 32px 8px 14px; cursor: pointer;
+    background: rgba(255, 255, 255, .22) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 13px center / 10px; }
+  .selects option { color: var(--ink); }
+  .sheet { background: var(--card); margin-top: -34px; border-radius: 34px 34px 0 0; padding: 18px 16px 16px; display: grid; gap: 12px; }
+  .days { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 4px; scrollbar-width: none; }
+  .days::-webkit-scrollbar { display: none; }
+  .day { flex: 1 0 38px; border: 1px solid var(--line); background: #fff; border-radius: 16px; padding: 7px 2px; display: grid; justify-items: center; font-weight: 600; font-size: 13px; }
+  .day small { font-weight: 500; font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .day[aria-pressed="true"] { background: var(--teal-ink); border-color: var(--teal-ink); color: #fff; }
+  .day[aria-pressed="true"] small { color: rgba(255, 255, 255, .75); }
+  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .meal { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 8px; border-radius: 18px; }
+  .meal:hover, .meal.sel { background: var(--teal-soft); }
+  .open { display: grid; grid-template-columns: 58px 1fr; gap: 12px; align-items: center; text-align: left; background: none; border: 0; padding: 0; min-width: 0; }
+  .thumb { width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; font-size: 30px;
+    background: linear-gradient(145deg, #f4fbfa, #d3eeeb); box-shadow: 0 6px 14px rgba(36, 96, 92, .12); }
+  .open .name { display: block; font-weight: 600; font-size: 14px; line-height: 1.25; }
+  .open .meta { display: block; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .icon { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--teal-ink); font-size: 17px; }
+  .icon:hover { border-color: var(--teal); }
+  .bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 6px 0; border-top: 1px solid var(--line); }
+  .total span { display: block; font-size: 12px; color: var(--muted); }
+  .total b { font-size: 20px; font-variant-numeric: tabular-nums; }
+  .pill { border: 0; border-radius: 16px; background: var(--teal-ink); color: #fff; font-weight: 600; font-size: 14px; padding: 13px 24px; }
+  .pill:hover { background: #1c4f4b; }
+  .pill:disabled { opacity: .6; }
+  .status { margin: 0; padding: 0 6px; font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #c9d4d3; }
+  .dot.on { background: #3cc48a; }
+  .saved { display: grid; gap: 6px; padding: 10px 6px 0; border-top: 1px solid var(--line); }
+  .saved h3 { margin: 0; font-size: 13px; }
   .saved ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .saved li { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 6px; }
-  .dot.on { background: var(--accent); }
+  .saved li { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .saved li button { border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 4px 10px; font-size: 12px; color: var(--teal-ink); font-weight: 600; }
+
+  /* Schermata dettaglio */
+  .hero { background: var(--teal); height: calc(150px + env(safe-area-inset-top)); position: relative; }
+  .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 64px; background: var(--card); border-radius: 60% 40% 0 0 / 100% 100% 0 0; }
+  .back { position: absolute; top: calc(14px + env(safe-area-inset-top)); left: 14px; z-index: 2; border: 0; background: rgba(255, 255, 255, .22); color: #fff; width: 38px; height: 38px; border-radius: 12px; font-size: 22px; line-height: 1; }
+  .plate { position: relative; z-index: 1; width: 190px; height: 190px; margin: -118px auto 0; border-radius: 50%; border: 8px solid #fff; display: grid; place-items: center; font-size: 92px;
+    background: radial-gradient(circle at 35% 30%, #ffffff, #e4f5f3 58%, #c4e7e3); box-shadow: 0 18px 40px rgba(20, 70, 66, .28); }
+  .body { padding: 18px 22px 24px; display: grid; gap: 18px; }
+  .d-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .when { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+  .d-head h2 { margin: 2px 0 0; font-size: 21px; line-height: 1.2; text-wrap: balance; }
+  .d-kcal { font-size: 22px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .badge { flex: none; background: var(--teal); color: #fff; border-radius: 14px; padding: 8px 12px; font-weight: 600; font-size: 12px; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tile { border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 20px; background: #fbfefe; }
+  .tile span { font-size: 12px; color: var(--muted); }
+  .tile b { font-size: 15px; font-variant-numeric: tabular-nums; }
+  .pill.wide { width: 100%; }
+  .foot { margin: 0; max-width: 60ch; text-align: center; font-size: 12px; color: rgba(255, 255, 255, .75); }
+
+  @media (max-width: 859px) {
+    .detail { position: fixed; inset: 0; z-index: 10; border-radius: 0; overflow-y: auto; visibility: hidden; transform: translateY(100%);
+      transition: transform .3s ease, visibility 0s linear .3s; }
+    .detail.show { visibility: visible; transform: none; transition: transform .3s ease; }
+    .detail .body { max-width: 440px; margin: 0 auto; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+  }
+  @media (min-width: 860px) { .back { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .detail, .detail.show { transition: none; } }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Menu della settimana</h1>
-    <p class="sub">Scegli l'obiettivo e genera 7 giorni di pasti semplici. Tocca ↻ per cambiare un piatto.</p>
-  </header>
+  <div class="stage">
+    <main class="phone">
+      <header class="top">
+        <div class="top-row">
+          <span class="brand">Menu Fit</span>
+          <button id="gen" class="ghost">↻ Nuova settimana</button>
+        </div>
+        <div>
+          <h1>Mangia sano<br>tutta la settimana</h1>
+          <p>Tocca un piatto per i dettagli</p>
+        </div>
+        <div class="selects">
+          <select id="goal" aria-label="Obiettivo">
+            <option value="dimagrire">Dimagrire</option>
+            <option value="mantenersi" selected>Mantenersi</option>
+            <option value="muscolo">Mettere muscolo</option>
+          </select>
+          <select id="diet" aria-label="Alimentazione">
+            <option value="onnivora">Onnivora</option>
+            <option value="vegetariana">Vegetariana</option>
+          </select>
+        </div>
+      </header>
 
-  <div class="bar">
-    <label for="goal">Obiettivo
-      <select id="goal">
-        <option value="dimagrire">Dimagrire (porzioni −15%)</option>
-        <option value="mantenersi" selected>Mantenersi</option>
-        <option value="muscolo">Mettere muscolo (porzioni +20%)</option>
-      </select>
-    </label>
-    <label for="diet">Alimentazione
-      <select id="diet">
-        <option value="onnivora">Onnivora</option>
-        <option value="vegetariana">Vegetariana</option>
-      </select>
-    </label>
-    <button id="gen" class="main">Genera settimana</button>
-    <button id="save">Salva nel database</button>
+      <section class="sheet">
+        <nav class="days" id="days" aria-label="Giorni"></nav>
+        <ul class="list" id="list"></ul>
+        <div class="bottom">
+          <div class="total"><span id="totLabel">Totale del giorno</span><b id="tot">0 kcal</b></div>
+          <button id="save" class="pill">Salva</button>
+        </div>
+        <p class="status" id="status"><span class="dot"></span>Database: controllo…</p>
+        <div class="saved" id="savedBox" hidden>
+          <h3>Ultimi piani salvati</h3>
+          <ul id="savedList"></ul>
+        </div>
+      </section>
+    </main>
+
+    <aside class="phone detail" id="detail" aria-label="Dettaglio piatto">
+      <div class="hero"><button class="back" id="back" aria-label="Torna all'elenco">‹</button></div>
+      <div class="plate" id="dEmoji" aria-hidden="true"></div>
+      <div class="body">
+        <div class="d-head">
+          <div>
+            <div class="when" id="dWhen"></div>
+            <h2 id="dName"></h2>
+            <div class="d-kcal" id="dKcal"></div>
+          </div>
+          <span class="badge" id="dBadge"></span>
+        </div>
+        <div class="tiles">
+          <div class="tile"><span>Calorie</span><b id="tKcal"></b></div>
+          <div class="tile"><span>Proteine</span><b id="tProt"></b></div>
+          <div class="tile"><span>Porzione</span><b id="tPort"></b></div>
+        </div>
+        <button class="pill wide" id="swapSel">↻ Cambia piatto</button>
+      </div>
+    </aside>
   </div>
-  <p class="note" id="status"><span class="dot"></span>Database: controllo…</p>
 
-  <section class="days" id="days"></section>
-
-  <section class="saved" id="savedBox" hidden>
-    <h3>Ultimi piani salvati</h3>
-    <ul id="savedList"></ul>
-  </section>
-
-  <p class="note">Demo a scopo dimostrativo: le calorie sono indicative e non sostituiscono il parere di un nutrizionista.</p>
+  <p class="foot">Demo a scopo dimostrativo: le calorie sono indicative e non sostituiscono il parere di un nutrizionista.</p>
 </div>
 
 <script src="config.js"></script>
 <script>
-// Ricette: n = nome, k = kcal porzione standard, p = proteine (g), v = vegetariana
+// Ricette: n = nome, e = icona, k = kcal porzione standard, p = proteine (g), v = vegetariana
 const MEALS = {
   Colazione: [
-    { n: "Yogurt greco, avena e frutti di bosco", k: 350, p: 22, v: true },
-    { n: "Pane integrale, ricotta e miele", k: 340, p: 16, v: true },
-    { n: "Porridge con banana e burro di arachidi", k: 420, p: 14, v: true },
-    { n: "Uova strapazzate e pane integrale", k: 380, p: 22, v: true },
-    { n: "Latte, fiocchi d'avena e una mela", k: 330, p: 14, v: true },
-    { n: "Toast integrale con avocado e uovo", k: 400, p: 17, v: true },
+    { n: "Yogurt greco, avena e frutti di bosco", e: "🫐", k: 350, p: 22, v: true },
+    { n: "Pane integrale, ricotta e miele", e: "🍯", k: 340, p: 16, v: true },
+    { n: "Porridge con banana e burro di arachidi", e: "🥣", k: 420, p: 14, v: true },
+    { n: "Uova strapazzate e pane integrale", e: "🍳", k: 380, p: 22, v: true },
+    { n: "Latte, fiocchi d'avena e una mela", e: "🍎", k: 330, p: 14, v: true },
+    { n: "Toast integrale con avocado e uovo", e: "🥑", k: 400, p: 17, v: true },
   ],
   Pranzo: [
-    { n: "Pasta integrale al pomodoro con tonno", k: 560, p: 32, v: false },
-    { n: "Insalata di farro, ceci e verdure", k: 520, p: 20, v: true },
-    { n: "Riso basmati con pollo e zucchine", k: 580, p: 40, v: false },
-    { n: "Pasta e lenticchie", k: 540, p: 24, v: true },
-    { n: "Poke di salmone, riso ed edamame", k: 600, p: 34, v: false },
-    { n: "Orzo con feta, pomodorini e olive", k: 530, p: 19, v: true },
-    { n: "Wrap integrale con tacchino e verdure", k: 500, p: 32, v: false },
-    { n: "Pasta con zucchine e ricotta", k: 540, p: 21, v: true },
+    { n: "Pasta integrale al pomodoro con tonno", e: "🍝", k: 560, p: 32, v: false },
+    { n: "Insalata di farro, ceci e verdure", e: "🥗", k: 520, p: 20, v: true },
+    { n: "Riso basmati con pollo e zucchine", e: "🍚", k: 580, p: 40, v: false },
+    { n: "Pasta e lenticchie", e: "🍲", k: 540, p: 24, v: true },
+    { n: "Poke di salmone, riso ed edamame", e: "🍣", k: 600, p: 34, v: false },
+    { n: "Orzo con feta, pomodorini e olive", e: "🫒", k: 530, p: 19, v: true },
+    { n: "Wrap integrale con tacchino e verdure", e: "🌯", k: 500, p: 32, v: false },
+    { n: "Pasta con zucchine e ricotta", e: "🥒", k: 540, p: 21, v: true },
   ],
   Spuntino: [
-    { n: "Una mela e 15 g di mandorle", k: 180, p: 4, v: true },
-    { n: "Yogurt greco 0%", k: 120, p: 15, v: true },
-    { n: "Carote e hummus", k: 160, p: 5, v: true },
-    { n: "Una banana", k: 110, p: 1, v: true },
-    { n: "Frutta secca mista (20 g)", k: 120, p: 4, v: true },
-    { n: "Gallette di riso con bresaola", k: 150, p: 14, v: false },
+    { n: "Una mela e 15 g di mandorle", e: "🍏", k: 180, p: 4, v: true },
+    { n: "Yogurt greco 0%", e: "🥛", k: 120, p: 15, v: true },
+    { n: "Carote e hummus", e: "🥕", k: 160, p: 5, v: true },
+    { n: "Una banana", e: "🍌", k: 110, p: 1, v: true },
+    { n: "Frutta secca mista (20 g)", e: "🥜", k: 120, p: 4, v: true },
+    { n: "Gallette di riso con bresaola", e: "🍘", k: 150, p: 14, v: false },
   ],
   Cena: [
-    { n: "Salmone al forno, patate e fagiolini", k: 560, p: 36, v: false },
-    { n: "Pollo alla griglia, verdure e pane", k: 480, p: 42, v: false },
-    { n: "Frittata di spinaci con insalata", k: 420, p: 26, v: true },
-    { n: "Merluzzo con pomodorini e cous cous", k: 470, p: 34, v: false },
-    { n: "Zuppa di ceci e verdure con crostini", k: 450, p: 20, v: true },
-    { n: "Tofu saltato con verdure e riso", k: 480, p: 24, v: true },
-    { n: "Minestrone con parmigiano e uovo sodo", k: 400, p: 22, v: true },
-    { n: "Burger di lenticchie e verdure grigliate", k: 460, p: 22, v: true },
+    { n: "Salmone al forno, patate e fagiolini", e: "🐟", k: 560, p: 36, v: false },
+    { n: "Pollo alla griglia, verdure e pane", e: "🍗", k: 480, p: 42, v: false },
+    { n: "Frittata di spinaci con insalata", e: "🥬", k: 420, p: 26, v: true },
+    { n: "Merluzzo con pomodorini e cous cous", e: "🍅", k: 470, p: 34, v: false },
+    { n: "Zuppa di ceci e verdure con crostini", e: "🫘", k: 450, p: 20, v: true },
+    { n: "Tofu saltato con verdure e riso", e: "🥢", k: 480, p: 24, v: true },
+    { n: "Minestrone con parmigiano e uovo sodo", e: "🥦", k: 400, p: 22, v: true },
+    { n: "Burger di lenticchie e verdure grigliate", e: "🍔", k: 460, p: 22, v: true },
   ],
 };
+const SLOTS = Object.keys(MEALS);
 const DAYS = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
 const FACTOR = { dimagrire: 0.85, mantenersi: 1, muscolo: 1.2 };
+const PORTION = { dimagrire: "−15%", mantenersi: "Normale", muscolo: "+20%" };
+const ICON = {};
+for (const s of SLOTS) for (const m of MEALS[s]) ICON[m.n] = m.e;
 const $ = (id) => document.getElementById(id);
 
 let plan = null; // { goal, diet, days: [{ Colazione: meal, Pranzo: meal, ... }] }
+let dayIdx = 0, slotSel = SLOTS[0];
+
+const iconOf = (m) => m.e || ICON[m.n] || "🍽️";
+const kcalOf = (m) => Math.round((m.k * FACTOR[plan.goal]) / 10) * 10;
+const protOf = (m) => Math.round(m.p * FACTOR[plan.goal]);
 
 function pool(slot, diet) {
   return MEALS[slot].filter((m) => diet === "onnivora" || m.v);
@@ -145,46 +235,62 @@ function shuffle(a) {
 function generate() {
   const goal = $("goal").value, diet = $("diet").value;
   const decks = {};
-  for (const slot in MEALS) decks[slot] = shuffle(pool(slot, diet));
+  for (const s of SLOTS) decks[s] = shuffle(pool(s, diet));
   const days = DAYS.map((_, i) => {
     const d = {};
-    for (const slot in MEALS) d[slot] = decks[slot][i % decks[slot].length];
+    for (const s of SLOTS) d[s] = decks[s][i % decks[s].length];
     return d;
   });
   plan = { goal, diet, days };
   render();
 }
-function swap(dayIdx, slot) {
-  const current = plan.days[dayIdx][slot];
+function swap(i, slot) {
+  const current = plan.days[i][slot];
   const options = pool(slot, plan.diet).filter((m) => m.n !== current.n);
-  plan.days[dayIdx][slot] = options[Math.floor(Math.random() * options.length)];
+  plan.days[i][slot] = options[Math.floor(Math.random() * options.length)];
   render();
 }
+
 function render() {
-  const f = FACTOR[plan.goal];
+  // Giorni
   $("days").innerHTML = "";
   plan.days.forEach((d, i) => {
-    let tot = 0;
-    const card = document.createElement("article");
-    card.className = "day";
-    const h = document.createElement("h2");
-    card.append(h);
-    for (const slot in MEALS) {
-      const m = d[slot];
-      const kcal = Math.round((m.k * f) / 10) * 10;
-      tot += kcal;
-      const row = document.createElement("div");
-      row.className = "meal";
-      row.innerHTML = `<span class="slot"></span><span class="name"></span><span class="kcal"></span><button title="Cambia piatto" aria-label="Cambia ${slot.toLowerCase()} di ${DAYS[i]}">↻</button>`;
-      row.querySelector(".slot").textContent = slot;
-      row.querySelector(".name").textContent = m.n;
-      row.querySelector(".kcal").textContent = `${kcal} kcal · ${Math.round(m.p * f)} g proteine`;
-      row.querySelector("button").onclick = () => swap(i, slot);
-      card.append(row);
-    }
-    h.innerHTML = `${DAYS[i]} <small>${tot} kcal</small>`;
-    $("days").append(card);
+    const b = document.createElement("button");
+    b.className = "day";
+    b.setAttribute("aria-pressed", i === dayIdx);
+    b.innerHTML = `${DAYS[i].slice(0, 3)}<small>${SLOTS.reduce((s, k) => s + kcalOf(d[k]), 0)}</small>`;
+    b.onclick = () => { dayIdx = i; render(); };
+    $("days").append(b);
   });
+  // Pasti del giorno scelto
+  const day = plan.days[dayIdx];
+  $("list").innerHTML = "";
+  let tot = 0;
+  for (const slot of SLOTS) {
+    const m = day[slot];
+    tot += kcalOf(m);
+    const li = document.createElement("li");
+    li.className = "meal" + (slot === slotSel ? " sel" : "");
+    li.innerHTML = `<button class="open"><span class="thumb" aria-hidden="true"></span><span><span class="name"></span><span class="meta"></span></span></button><button class="icon" title="Cambia piatto" aria-label="Cambia ${slot.toLowerCase()}">↻</button>`;
+    li.querySelector(".thumb").textContent = iconOf(m);
+    li.querySelector(".name").textContent = m.n;
+    li.querySelector(".meta").textContent = `${slot} · ${kcalOf(m)} kcal`;
+    li.querySelector(".open").onclick = () => { slotSel = slot; render(); $("detail").classList.add("show"); };
+    li.querySelector(".icon").onclick = () => swap(dayIdx, slot);
+    $("list").append(li);
+  }
+  $("totLabel").textContent = `Totale di ${DAYS[dayIdx].toLowerCase()}`;
+  $("tot").textContent = `${tot} kcal`;
+  // Dettaglio
+  const m = day[slotSel];
+  $("dEmoji").textContent = iconOf(m);
+  $("dWhen").textContent = `${DAYS[dayIdx]} · ${slotSel}`;
+  $("dName").textContent = m.n;
+  $("dKcal").textContent = `${kcalOf(m)} kcal`;
+  $("dBadge").textContent = m.v ? "Vegetariano" : "Carne o pesce";
+  $("tKcal").textContent = `${kcalOf(m)}`;
+  $("tProt").textContent = `${protOf(m)} g`;
+  $("tPort").textContent = PORTION[plan.goal];
   try { localStorage.setItem("menu-fit", JSON.stringify(plan)); } catch (e) {}
 }
 
@@ -210,10 +316,10 @@ async function loadSaved() {
   for (const row of rows) {
     const li = document.createElement("li");
     const when = new Date(row.created_at).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" });
-    li.textContent = `${when} · ${row.obiettivo} · ${row.dieta} `;
+    li.textContent = `${when} · ${row.obiettivo} · ${row.dieta}`;
     const b = document.createElement("button");
     b.textContent = "Apri";
-    b.onclick = () => { plan = row.piano; $("goal").value = plan.goal; $("diet").value = plan.diet; render(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    b.onclick = () => { plan = row.piano; dayIdx = 0; $("goal").value = plan.goal; $("diet").value = plan.diet; render(); };
     li.append(b);
     $("savedList").append(li);
   }
@@ -241,6 +347,8 @@ $("gen").onclick = generate;
 $("save").onclick = savePlan;
 $("goal").onchange = () => { plan.goal = $("goal").value; render(); };
 $("diet").onchange = generate;
+$("swapSel").onclick = () => swap(dayIdx, slotSel);
+$("back").onclick = () => $("detail").classList.remove("show");
 
 try { plan = JSON.parse(localStorage.getItem("menu-fit")); } catch (e) {}
 if (plan && plan.days) { $("goal").value = plan.goal; $("diet").value = plan.diet; render(); } else generate();
