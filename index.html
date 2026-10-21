@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu Settimana Fit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+  /* Layout: barra comandi in alto, poi griglia di 7 giorni che va a una colonna su telefono */
+  :root {
+    --bg: #f3f6f2; --card: #ffffff; --fg: #1d2a22; --muted: #5d6e63;
+    --line: #dbe4dc; --accent: #2f6b4f; --accent-fg: #ffffff; --pop: #d9822b;
+    --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121a15; --card: #1a241e; --fg: #e5ede7; --muted: #9db0a3;
+      --line: #2a3a30; --accent: #7cc4a0; --accent-fg: #0e1a13; --pop: #f0a35a;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.45 var(--body); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 28px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); display: grid; gap: 20px; }
+  h1 { font: 800 clamp(28px, 5vw, 40px)/1.05 var(--display); margin: 0; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); margin: 6px 0 0; }
+  .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+  label { display: grid; gap: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  select, button { font: inherit; font-size: 15px; border-radius: 10px; padding: 9px 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); }
+  button { cursor: pointer; }
+  button.main { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+  button:focus-visible, select:focus-visible { outline: 2px solid var(--pop); outline-offset: 2px; }
+  .note { font-size: 13px; color: var(--muted); }
+  .days { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+  .day { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 10px; align-content: start; }
+  .day h2 { font: 600 20px/1 var(--display); margin: 0; display: flex; justify-content: space-between; align-items: baseline; }
+  .day h2 small { font: 600 13px var(--body); color: var(--pop); font-variant-numeric: tabular-nums; }
+  .meal { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .meal .slot { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+  .meal .name { grid-column: 1; }
+  .meal .kcal { grid-column: 1; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .meal button { grid-column: 2; grid-row: 1 / span 3; align-self: center; padding: 4px 8px; font-size: 13px; }
+  .saved { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 8px; }
+  .saved h3 { margin: 0; font: 600 17px var(--display); }
+  .saved ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .saved li { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 6px; }
+  .dot.on { background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Menu della settimana</h1>
+    <p class="sub">Scegli l'obiettivo e genera 7 giorni di pasti semplici. Tocca ↻ per cambiare un piatto.</p>
+  </header>
+
+  <div class="bar">
+    <label for="goal">Obiettivo
+      <select id="goal">
+        <option value="dimagrire">Dimagrire (porzioni −15%)</option>
+        <option value="mantenersi" selected>Mantenersi</option>
+        <option value="muscolo">Mettere muscolo (porzioni +20%)</option>
+      </select>
+    </label>
+    <label for="diet">Alimentazione
+      <select id="diet">
+        <option value="onnivora">Onnivora</option>
+        <option value="vegetariana">Vegetariana</option>
+      </select>
+    </label>
+    <button id="gen" class="main">Genera settimana</button>
+    <button id="save">Salva nel database</button>
+  </div>
+  <p class="note" id="status"><span class="dot"></span>Database: controllo…</p>
+
+  <section class="days" id="days"></section>
+
+  <section class="saved" id="savedBox" hidden>
+    <h3>Ultimi piani salvati</h3>
+    <ul id="savedList"></ul>
+  </section>
+
+  <p class="note">Demo a scopo dimostrativo: le calorie sono indicative e non sostituiscono il parere di un nutrizionista.</p>
+</div>
+
+<script src="config.js"></script>
+<script>
+// Ricette: n = nome, k = kcal porzione standard, p = proteine (g), v = vegetariana
+const MEALS = {
+  Colazione: [
+    { n: "Yogurt greco, avena e frutti di bosco", k: 350, p: 22, v: true },
+    { n: "Pane integrale, ricotta e miele", k: 340, p: 16, v: true },
+    { n: "Porridge con banana e burro di arachidi", k: 420, p: 14, v: true },
+    { n: "Uova strapazzate e pane integrale", k: 380, p: 22, v: true },
+    { n: "Latte, fiocchi d'avena e una mela", k: 330, p: 14, v: true },
+    { n: "Toast integrale con avocado e uovo", k: 400, p: 17, v: true },
+  ],
+  Pranzo: [
+    { n: "Pasta integrale al pomodoro con tonno", k: 560, p: 32, v: false },
+    { n: "Insalata di farro, ceci e verdure", k: 520, p: 20, v: true },
+    { n: "Riso basmati con pollo e zucchine", k: 580, p: 40, v: false },
+    { n: "Pasta e lenticchie", k: 540, p: 24, v: true },
+    { n: "Poke di salmone, riso ed edamame", k: 600, p: 34, v: false },
+    { n: "Orzo con feta, pomodorini e olive", k: 530, p: 19, v: true },
+    { n: "Wrap integrale con tacchino e verdure", k: 500, p: 32, v: false },
+    { n: "Pasta con zucchine e ricotta", k: 540, p: 21, v: true },
+  ],
+  Spuntino: [
+    { n: "Una mela e 15 g di mandorle", k: 180, p: 4, v: true },
+    { n: "Yogurt greco 0%", k: 120, p: 15, v: true },
+    { n: "Carote e hummus", k: 160, p: 5, v: true },
+    { n: "Una banana", k: 110, p: 1, v: true },
+    { n: "Frutta secca mista (20 g)", k: 120, p: 4, v: true },
+    { n: "Gallette di riso con bresaola", k: 150, p: 14, v: false },
+  ],
+  Cena: [
+    { n: "Salmone al forno, patate e fagiolini", k: 560, p: 36, v: false },
+    { n: "Pollo alla griglia, verdure e pane", k: 480, p: 42, v: false },
+    { n: "Frittata di spinaci con insalata", k: 420, p: 26, v: true },
+    { n: "Merluzzo con pomodorini e cous cous", k: 470, p: 34, v: false },
+    { n: "Zuppa di ceci e verdure con crostini", k: 450, p: 20, v: true },
+    { n: "Tofu saltato con verdure e riso", k: 480, p: 24, v: true },
+    { n: "Minestrone con parmigiano e uovo sodo", k: 400, p: 22, v: true },
+    { n: "Burger di lenticchie e verdure grigliate", k: 460, p: 22, v: true },
+  ],
+};
+const DAYS = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
+const FACTOR = { dimagrire: 0.85, mantenersi: 1, muscolo: 1.2 };
+const $ = (id) => document.getElementById(id);
+
+let plan = null; // { goal, diet, days: [{ Colazione: meal, Pranzo: meal, ... }] }
+
+function pool(slot, diet) {
+  return MEALS[slot].filter((m) => diet === "onnivora" || m.v);
+}
+function shuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function generate() {
+  const goal = $("goal").value, diet = $("diet").value;
+  const decks = {};
+  for (const slot in MEALS) decks[slot] = shuffle(pool(slot, diet));
+  const days = DAYS.map((_, i) => {
+    const d = {};
+    for (const slot in MEALS) d[slot] = decks[slot][i % decks[slot].length];
+    return d;
+  });
+  plan = { goal, diet, days };
+  render();
+}
+function swap(dayIdx, slot) {
+  const current = plan.days[dayIdx][slot];
+  const options = pool(slot, plan.diet).filter((m) => m.n !== current.n);
+  plan.days[dayIdx][slot] = options[Math.floor(Math.random() * options.length)];
+  render();
+}
+function render() {
+  const f = FACTOR[plan.goal];
+  $("days").innerHTML = "";
+  plan.days.forEach((d, i) => {
+    let tot = 0;
+    const card = document.createElement("article");
+    card.className = "day";
+    const h = document.createElement("h2");
+    card.append(h);
+    for (const slot in MEALS) {
+      const m = d[slot];
+      const kcal = Math.round((m.k * f) / 10) * 10;
+      tot += kcal;
+      const row = document.createElement("div");
+      row.className = "meal";
+      row.innerHTML = `<span class="slot"></span><span class="name"></span><span class="kcal"></span><button title="Cambia piatto" aria-label="Cambia ${slot.toLowerCase()} di ${DAYS[i]}">↻</button>`;
+      row.querySelector(".slot").textContent = slot;
+      row.querySelector(".name").textContent = m.n;
+      row.querySelector(".kcal").textContent = `${kcal} kcal · ${Math.round(m.p * f)} g proteine`;
+      row.querySelector("button").onclick = () => swap(i, slot);
+      card.append(row);
+    }
+    h.innerHTML = `${DAYS[i]} <small>${tot} kcal</small>`;
+    $("days").append(card);
+  });
+  try { localStorage.setItem("menu-fit", JSON.stringify(plan)); } catch (e) {}
+}
+
+// --- Supabase (REST, senza librerie). Si attiva se config.js ha URL e chiave. ---
+const CFG = window.SUPABASE_CONFIG || {};
+const TABLE = "demo_piani_pasti";
+const dbOn = Boolean(CFG.url && CFG.anonKey);
+function headers() {
+  const h = { apikey: CFG.anonKey, "Content-Type": "application/json" };
+  if (CFG.anonKey.startsWith("eyJ")) h.Authorization = "Bearer " + CFG.anonKey; // chiave anon "classica" (JWT)
+  return h;
+}
+function setStatus(text, on) {
+  $("status").innerHTML = `<span class="dot${on ? " on" : ""}"></span>`;
+  $("status").append(text);
+}
+async function loadSaved() {
+  const r = await fetch(`${CFG.url}/rest/v1/${TABLE}?select=id,created_at,obiettivo,dieta,piano&order=created_at.desc&limit=5`, { headers: headers() });
+  if (!r.ok) throw new Error(await r.text());
+  const rows = await r.json();
+  $("savedBox").hidden = rows.length === 0;
+  $("savedList").innerHTML = "";
+  for (const row of rows) {
+    const li = document.createElement("li");
+    const when = new Date(row.created_at).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" });
+    li.textContent = `${when} · ${row.obiettivo} · ${row.dieta} `;
+    const b = document.createElement("button");
+    b.textContent = "Apri";
+    b.onclick = () => { plan = row.piano; $("goal").value = plan.goal; $("diet").value = plan.diet; render(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+    li.append(b);
+    $("savedList").append(li);
+  }
+}
+async function savePlan() {
+  if (!dbOn) { setStatus("Database non collegato: inserisci URL e chiave in config.js.", false); return; }
+  $("save").disabled = true;
+  try {
+    const r = await fetch(`${CFG.url}/rest/v1/${TABLE}`, {
+      method: "POST",
+      headers: { ...headers(), Prefer: "return=minimal" },
+      body: JSON.stringify({ obiettivo: plan.goal, dieta: plan.diet, piano: plan }),
+    });
+    if (!r.ok) throw new Error(await r.text());
+    setStatus("Piano salvato su Supabase.", true);
+    await loadSaved();
+  } catch (e) {
+    setStatus("Salvataggio non riuscito: " + e.message, false);
+  } finally {
+    $("save").disabled = false;
+  }
+}
+
+$("gen").onclick = generate;
+$("save").onclick = savePlan;
+$("goal").onchange = () => { plan.goal = $("goal").value; render(); };
+$("diet").onchange = generate;
+
+try { plan = JSON.parse(localStorage.getItem("menu-fit")); } catch (e) {}
+if (plan && plan.days) { $("goal").value = plan.goal; $("diet").value = plan.diet; render(); } else generate();
+
+if (dbOn) {
+  setStatus("Database: collegato a Supabase.", true);
+  loadSaved().catch((e) => setStatus("Database raggiungibile ma la tabella non risponde: " + e.message, false));
+} else {
+  setStatus("Database non collegato: il piano resta solo su questo dispositivo.", false);
+}
+</script>
+</body>
+</html>
